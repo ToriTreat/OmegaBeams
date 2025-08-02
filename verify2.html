@@ -1,60 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Verify | bloxlose.com</title>
+  <meta charset="UTF-8">
+  <title>Phantom | Key Verification</title>
+  <link rel="icon" href="https://github.com/localgoth/localgoth.github.io/blob/main/Phantom%20bot.jpg?raw=true" type="image/jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: white;
+      font-family: 'Titillium Web', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
       text-align: center;
-      margin-top: 100px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+      max-width: 500px;
+      width: 90%;
     }
-    input, button {
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
       padding: 10px;
-      font-size: 16px;
-      margin: 10px;
-    }
-    .code {
-      margin-top: 20px;
       font-size: 18px;
-      background: #222;
+      width: 90%;
+      max-width: 400px;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      background: linear-gradient(45deg, #ff6a00, #ee0979);
+      color: white;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(45deg, #ff6a00, #ff2a6d);
+    }
+
+    .result {
+      font-size: 20px;
+      background: rgba(255, 255, 255, 0.1);
       padding: 10px;
-      border-radius: 6px;
-      display: inline-block;
+      border-radius: 8px;
+      word-break: break-all;
     }
   </style>
 </head>
 <body>
-  <h1>Discord Verification</h1>
-  <p>Enter your Discord User ID below to generate your verification code.</p>
-  
-  <input type="text" id="discordIdInput" placeholder="Enter Discord ID" />
-  <button onclick="generateCode()">Generate Code</button>
-
-  <div id="result" class="code" style="display:none;"></div>
+  <div class="container">
+    <h1>Phantom | /verify2</h1>
+    <p>Enter your Discord ID:</p>
+    <input type="text" id="discordIdInput" placeholder="Enter Discord ID">
+    <br>
+    <button onclick="generateKey()">Generate Obfuscated Key</button>
+    <div id="result" class="result"></div>
+  </div>
 
   <script>
-    function generateCode() {
-      const userId = document.getElementById("discordIdInput").value.trim();
-      if (!/^\d{5,20}$/.test(userId)) {
-        alert("Please enter a valid numeric Discord ID.");
+    function obfuscate(discordId) {
+      const mapping = {
+        '0': 'N', '1': 'O', '2': 'G', '3': 'X', '4': 'Z',
+        '5': 'S', '6': 'Q', '7': 'L', '8': 'M', '9': 'T'
+      };
+      return discordId.split('').map(char => mapping[char] || '?').join('');
+    }
+
+    function generateKey() {
+      const input = document.getElementById('discordIdInput').value.trim();
+      const resultDiv = document.getElementById('result');
+
+      if (!/^\d+$/.test(input)) {
+        resultDiv.textContent = "❌ Please enter a valid Discord ID (numbers only).";
         return;
       }
 
-      const digitToChar = {
-        '0': 'A', '1': 'O', '2': 'G', '3': 'H',
-        '4': 'X', '5': 'R', '6': '8', '7': '4',
-        '8': '6', '9': '0'
-      };
-
-      const obfuscated = [...userId].map(d => digitToChar[d] || '?').join('');
-
-      const resultBox = document.getElementById("result");
-      resultBox.innerHTML = `Your verification code: <strong>${obfuscated}</strong><br><br>Use <code>/verify ${obfuscated}</code> in Discord.`;
-      resultBox.style.display = "block";
+      const obfuscated = obfuscate(input);
+      resultDiv.innerHTML = `<b>Discord ID:</b> ${input}<br><b>Obfuscated Key:</b> ${obfuscated}<br><br>Use <code>/key ${obfuscated}</code> in Discord.`;
     }
   </script>
 </body>
