@@ -1,225 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phantom | Key</title>
-    <link rel="icon" href="https://github.com/localgoth/localgoth.github.io/blob/main/Phantom%20bot.jpg?raw=true" type="image/jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            color: white;
-            font-family: 'Titillium Web', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            text-align: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-            display: none;
-            position: relative;
-        }
-        .breadcrumb {
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        .breadcrumb .arrow {
-            color: #888;
-            margin: 0 5px;
-        }
-        h1 {
-            font-size: 36px;
-            margin-bottom: 20px;
-        }
-        input[type="text"] {
-            padding: 10px;
-            font-size: 18px;
-            border: none;
-            border-radius: 5px;
-            background: rgba(0, 0, 0, 0.4);
-            color: white;
-            margin-bottom: 20px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .key-display {
-            margin-bottom: 20px;
-            font-size: 24px;
-            word-wrap: break-word;
-            border: 1px solid #fff;
-            padding: 10px;
-            border-radius: 10px;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-        .timer-bar {
-            margin-top: 20px;
-            width: 100%;
-            background-color: #444;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .timer-bar-inner {
-            height: 10px;
-            background-color: #00ff00;
-            width: 0;
-            transition: width 1s linear;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 18px;
-            border: none;
-            border-radius: 5px;
-            background: linear-gradient(45deg, #ff6a00, #ee0979);
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-            margin: 5px;
-        }
-        button:hover {
-            transform: scale(1.05);
-            background: linear-gradient(45deg, #ff6a00, #ff2a6d);
-        }
-        #loading-container {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-        }
-        #loading-container img {
-            max-width: 100px;
-        }
-        #timer-message {
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        .error-message {
-            color: #ff6a00;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify | bloxlose.com</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      margin-top: 100px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+    }
+    .code {
+      margin-top: 20px;
+      font-size: 18px;
+      background: #222;
+      padding: 10px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+  </style>
 </head>
 <body>
-    <div id="loading-container">
-        <img src="https://github.com/localgoth/localgoth.github.io/blob/main/src/LoadingBlackBackground.png?raw=true" alt="Loading">
-    </div>
+  <h1>Discord Verification</h1>
+  <p>Enter your Discord User ID below to generate your verification code.</p>
+  
+  <input type="text" id="discordIdInput" placeholder="Enter Discord ID" />
+  <button onclick="generateCode()">Generate Code</button>
 
-    <div class="container">
-        <div class="breadcrumb">
-            <span class="gray">Phantom</span> <span class="arrow">&gt;</span> <span class="white">Key</span>
-        </div>
-        <h1>Phantom Key</h1>
-        <input type="text" id="user-id" placeholder="Enter your User ID or Username">
-        <button id="continue-btn" onclick="validateUser()">Continue</button>
-        <div id="error-message" class="error-message hidden"></div>
-        <button id="get-key-btn" class="hidden" onclick="fetchKey()">Get Key</button>
-        <div id="key-display" class="key-display hidden"></div>
-        <div class="timer-bar hidden">
-            <div id="timer-bar-inner" class="timer-bar-inner"></div>
-        </div>
-        <p id="timer-message" class="hidden">You have 24 hours until the key is invalid!</p>
-        <div class="discord-link">
-            <p>Need help? <a href="https://discord.gg/ZFWR7ETVBf" target="_blank">Join our Discord</a></p>
-        </div>
-    </div>
+  <div id="result" class="code" style="display:none;"></div>
 
-    <script>
-        // Define the mapping from digits to characters
-        const digitToChar = {
-            '0': 'A', '1': 'B', '2': 'C', '3': 'D',
-            '4': 'E', '5': 'F', '6': 'G', '7': 'H',
-            '8': 'I', '9': 'J'
-        };
+  <script>
+    function generateCode() {
+      const userId = document.getElementById("discordIdInput").value.trim();
+      if (!/^\d{5,20}$/.test(userId)) {
+        alert("Please enter a valid numeric Discord ID.");
+        return;
+      }
 
-        // Function to map user ID based on the digitToChar mapping
-        function mapUserId(userId) {
-            let mappedId = '';
-            for (let i = 0; i < userId.length; i++) {
-                const digit = userId[i];
-                mappedId += digitToChar[digit] || digit; // Use mapping or leave as is if not found
-            }
-            return mappedId;
-        }
+      const digitToChar = {
+        '0': 'A', '1': 'O', '2': 'G', '3': 'H',
+        '4': 'X', '5': 'R', '6': '8', '7': '4',
+        '8': '6', '9': '0'
+      };
 
-        // Function to validate the user
-        async function validateUser() {
-            const userId = document.getElementById('user-id').value;
+      const obfuscated = [...userId].map(d => digitToChar[d] || '?').join('');
 
-            // Check if the userId is valid and map it
-            if (!userId) {
-                document.getElementById('error-message').innerText = 'Please enter a User ID.';
-                document.getElementById('error-message').classList.remove('hidden');
-                return;
-            }
-
-            // Map the User ID
-            const mappedId = mapUserId(userId);
-            console.log('Original User ID:', userId);
-            console.log('Mapped User ID:', mappedId);
-
-            // Show the mapped ID in the key-display area for verification
-            document.getElementById('key-display').innerText = `Mapped ID: ${mappedId}`;
-            document.getElementById('key-display').classList.remove('hidden');
-            
-            // Simulate server-side validation (replace this with an actual server request in production)
-            const isValid = true; // This should be the result of server-side validation
-
-            if (isValid) {
-                document.getElementById('error-message').classList.add('hidden');
-                document.getElementById('continue-btn').classList.add('hidden');
-                document.getElementById('get-key-btn').classList.remove('hidden');
-            } else {
-                document.getElementById('error-message').innerText = 'Invalid User ID. Please try again.';
-                document.getElementById('error-message').classList.remove('hidden');
-            }
-        }
-
-        async function fetchKey() {
-            const userId = document.getElementById('user-id').value;
-            try {
-                const response = await fetch('/generate_key', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ user_id: userId })
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    document.getElementById('key-display').innerText = data.key;
-                    const expirationTime = new Date(data.expiration).getTime();
-                    document.getElementById('key-display').classList.remove('hidden');
-                    document.getElementById('timer-bar-inner').classList.remove('hidden');
-                    document.getElementById('timer-message').classList.remove('hidden');
-                    startTimer(expirationTime);
-                } else {
-                    document.getElementById('key-display').classList.add('hidden');
-                    document.getElementById('timer-bar-inner').classList.add('hidden');
-                    document.getElementById('timer-message').classList.add('hidden');
-                    console.error('Error fetching key:', data.message);
-                }
-            } catch (error) {
-                console.error('Key generation error:', error);
-            }
-        }
-
-        function startTimer(expirationTime) {
-            const timerBarInner = document.getElementById('timer-bar-inner');
-            const interval = setInterval(() => {
-                const now = new Date().getTime();
+      const resultBox = document.getElementById("result");
+      resultBox.innerHTML = `Your verification code: <strong>${obfuscated}</strong><br><br>Use <code>/verify ${obfuscated}</code> in Discord.`;
+      resultBox.style.display = "block";
+    }
+  </script>
+</body>
+</html>
